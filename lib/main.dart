@@ -1,6 +1,8 @@
 import 'package:applestoreapp/pages/bottomnav.dart';
 import 'package:applestoreapp/pages/home.dart';
+import 'package:applestoreapp/pages/login.dart';
 import 'package:applestoreapp/pages/onboarding.dart';
+import 'package:applestoreapp/pages/product_detail.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Bottomnav(),
+      home: LoginPage(),
     );
   }
 }
