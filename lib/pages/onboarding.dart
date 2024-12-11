@@ -35,8 +35,13 @@ class _OnboardingState extends State<Onboarding> {
                 margin: EdgeInsets.only(right: 20),
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(60)),
-                child: Text("Next",
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                child: GestureDetector(
+                  // onTap: (){
+                  //   Navigator.pushNamed(context, "login");
+                  // },
+                  child: Text("Next",
+                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
