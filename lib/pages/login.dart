@@ -1,3 +1,5 @@
+import 'package:applestoreapp/pages/signup.dart';
+import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -52,9 +54,9 @@ class LoginPage extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {},
-                child: const Text(
+                child: Text(
                   "Forgot Password?",
-                  style: TextStyle(color: Colors.black),
+                  style: AppWidget.blueTextFieldStyle(),
                 ),
               ),
             ),
@@ -114,10 +116,12 @@ class LoginPage extends StatelessWidget {
               children: [
                 const Text("Don't have an account?"),
                 TextButton(
-                  onPressed: () {},
-                  child: const Text(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> Signup()));
+                  },
+                  child: Text(
                     "Sign Up",
-                    style: TextStyle(color: Colors.black),
+                    style: AppWidget.blueTextFieldStyle(),
                   ),
                 ),
               ],
