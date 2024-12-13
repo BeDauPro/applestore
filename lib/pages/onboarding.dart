@@ -1,3 +1,4 @@
+import 'package:applestoreapp/pages/login.dart';
 import 'package:flutter/material.dart';
 
 class Onboarding extends StatefulWidget {
@@ -36,9 +37,27 @@ class _OnboardingState extends State<Onboarding> {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(60)),
                 child: GestureDetector(
-                  // onTap: (){
-                  //   Navigator.pushNamed(context, "login");
-                  // },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => LoginPage(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
                   child: Text("Next",
                   style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),

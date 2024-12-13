@@ -1,8 +1,12 @@
 import 'package:applestoreapp/pages/bottomnav.dart';
 import 'package:applestoreapp/pages/login.dart';
+import 'package:applestoreapp/services/database.dart';
+import 'package:applestoreapp/services/share_pref.dart';
 import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:random_string/random_string.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -39,6 +43,19 @@ class _SignupState extends State<Signup> {
             duration: const Duration(seconds: 3),
           ),
         );
+        String Id= randomAlphaNumeric(10);
+        await SharedPreferenceHelper().saveUserEmail(emailController.text);
+        await SharedPreferenceHelper().saveUserId(Id);
+        await SharedPreferenceHelper().saveUserName(nameController.text);
+        await SharedPreferenceHelper().saveUserImage("https://avatardep.info/wp-content/uploads/2024/10/capybara-anh-cute-moi-nhat.jpg");
+
+        Map<String, dynamic> userInfoMap = {
+          "Name": nameController.text,
+          "Email": emailController.text,
+          "Id":Id,
+          "Image": "https://avatardep.info/wp-content/uploads/2024/10/capybara-anh-cute-moi-nhat.jpg"
+        };
+        await DatabaseMethods().addUserDetails(userInfoMap, Id);
         Navigator.push(context, MaterialPageRoute(builder: (context) => Bottomnav()));
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
