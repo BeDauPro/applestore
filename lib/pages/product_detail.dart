@@ -2,7 +2,8 @@ import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetail extends StatefulWidget {
-  const ProductDetail({super.key});
+  String name, price, image, detail;
+  ProductDetail({required this.name, required this.price, required this.image, required this.detail});
 
   @override
   State<ProductDetail> createState() => _ProductDetailState();
@@ -20,7 +21,7 @@ class _ProductDetailState extends State<ProductDetail> {
           children: [
             Stack(
               children:[
-                Center(child: Image.asset("images/iphone16prm.jpeg", height: 400,)),
+                Center(child: Image.network(widget.image, height: 400,)),
                 GestureDetector(
                   onTap: (){
                     Navigator.pop(context);
@@ -43,9 +44,9 @@ class _ProductDetailState extends State<ProductDetail> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Iphone 16 Pro",
+                      Text(widget.name,
                         style: AppWidget.boldTextFieldStyle(),),
-                      Text("\$999",
+                      Text("\$"+widget.price,
                         style: AppWidget.lightTextFieldStyle()
                       )
                     ],
@@ -53,7 +54,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   SizedBox(height: 20,),
                   Text("Details", style: AppWidget.semiboldTextFieldStyle(),),
                   SizedBox(height: 10,),
-                  Text("iPhone 16 Pro features a Grade 5 titanium design with a new, refined microblasted texture. Titanium has one of the highest strength-to-weight ratios of any metal, making these models incredibly strong and impressively light. iPhone 16 Pro comes in four stunning finishes — including new Desert Titanium."),
+                  Text(widget.detail),
                   SizedBox(height: 120,),
                   Row(
                     children: [

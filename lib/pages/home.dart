@@ -1,3 +1,4 @@
+import 'package:applestoreapp/pages/category_products.dart';
 import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,14 @@ class _HomeState extends State<Home> {
     "images/iphone16prm.jpeg",
     "images/watchultra2.png",
     "images/airpods.jpeg",
+  ];
+
+  List Categoryname=[
+    "Macbook",
+    "iPad",
+    "iPhone",
+    "Apple Watch",
+    "Airpods",
   ];
   @override
   Widget build(BuildContext context) {
@@ -91,7 +100,7 @@ class _HomeState extends State<Home> {
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index){
-                          return CategoryTile(image: categories[index],);
+                          return CategoryTile(image: categories[index], name: Categoryname[index],);
                         }),
                   ),
                 ),
@@ -340,24 +349,32 @@ class _HomeState extends State<Home> {
 }
 
 class CategoryTile extends StatelessWidget {
-  String image;
-  CategoryTile({required this.image});
+  String image, name;
+  CategoryTile({required this.image, required this.name});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.only(right: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset(image, height: 60, width: 60, fit: BoxFit.cover,),
-          Icon(Icons.arrow_forward_ios)
-        ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CategoryProducts(category: name,)),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(20),
+        margin: EdgeInsets.only(right: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Image.asset(image, height: 60, width: 60, fit: BoxFit.cover,),
+            Icon(Icons.arrow_forward_ios)
+          ],
+        ),
       ),
     );
   }

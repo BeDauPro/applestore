@@ -1,4 +1,9 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({super.key});
@@ -8,10 +13,49 @@ class AddProduct extends StatefulWidget {
 }
 
 class _AddProductState extends State<AddProduct> {
-  String? selectedCategory;
+  final _nameController = TextEditingController();
+  final _priceController = TextEditingController();
+  String? _base64Image;
+  String? _selectedCategory;
   final List<String> categoryItems = [
     'iPhone', 'MacBook', 'iPad', 'Apple Watch', 'AirPods'
   ];
+
+  final ImagePicker _picker = ImagePicker();
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _base64Image = pickedFile.path;
+      });
+    }
+  }
+
+  Future<void> _addProduct() async {
+    final name = _nameController.text.trim();
+    final price = _priceController.text.trim();
+
+    if (name.isEmpty || price.isEmpty || _base64Image == null || _selectedCategory == null) {
+      Fluttertoast.showToast(msg: "Vui lòng điền đầy đủ thông tin");
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('products').add({
+        'name': name,
+        'price': double.parse(price),
+        'category': _selectedCategory,
+        'image': _base64Image,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      Fluttertoast.showToast(msg: "Thêm sản phẩm thành công!");
+      Navigator.pop(context);
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Lỗi khi thêm sản phẩm: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +97,7 @@ class _AddProductState extends State<AddProduct> {
             SizedBox(height: 15),
             Center(
               child: GestureDetector(
-                onTap: () {
-                  // Add image upload functionality
-                },
+                onTap: _pickImage,
                 child: Container(
                   height: 150,
                   width: 150,
@@ -71,11 +113,13 @@ class _AddProductState extends State<AddProduct> {
                       ),
                     ],
                   ),
-                  child: Icon(
-                    Icons.camera_alt_outlined,
-                    color: Colors.grey[600],
-                    size: 50,
-                  ),
+                  child: _base64Image == null
+                    ?Icon(Icons.add_a_photo_outlined, size: 50, color: Colors.grey,)
+                      :ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.memory(base64Decode(_base64Image!),
+                    fit: BoxFit.cover, height: 150, width: 150,),
+                  )
                 ),
               ),
             ),
@@ -159,11 +203,11 @@ class _AddProductState extends State<AddProduct> {
                       .toList(),
                   onChanged: (value) {
                     setState(() {
-                      selectedCategory = value;
+                      _selectedCategory = value;
                     });
                   },
                   dropdownColor: Colors.white,
-                  value: selectedCategory,
+                  value: _selectedCategory,
                   hint: Text(
                     "Select category",
                     style: TextStyle(color: Colors.grey[500]),
