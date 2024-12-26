@@ -18,7 +18,6 @@ class _CategoryProductsState extends State<CategoryProducts> {
   getontheload() async{
    CategoryStream = await DatabaseMethods().getProducts(widget.category);
    setState(() {
-
    });
   }
 
@@ -53,7 +52,6 @@ class _CategoryProductsState extends State<CategoryProducts> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Product Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(

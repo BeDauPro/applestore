@@ -6,10 +6,13 @@ import 'package:applestoreapp/pages/login.dart';
 import 'package:applestoreapp/pages/onboarding.dart';
 import 'package:applestoreapp/pages/product_detail.dart';
 import 'package:applestoreapp/pages/signup.dart';
+import 'package:applestoreapp/services/constant.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
+  Stripe.publishableKey = publishableKey;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());

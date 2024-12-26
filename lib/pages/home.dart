@@ -1,4 +1,5 @@
 import 'package:applestoreapp/pages/category_products.dart';
+import 'package:applestoreapp/services/share_pref.dart';
 import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +27,31 @@ class _HomeState extends State<Home> {
     "Apple Watch",
     "Airpods",
   ];
+
+  String? name, image;
+
+  getthesharedpref()async{
+    name = await SharedPreferenceHelper().getUserName();
+    image = await SharedPreferenceHelper().getUserImage();
+    setState(() {});
+  }
+
+  ontheload()async{
+    await getthesharedpref();
+    setState(() {
+
+    });
+  }
+  @override
+  void initState(){
+    ontheload();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xfff2f2f2),
-      body: Container(
+      body: name== null? Center(child: CircularProgressIndicator()):Container(
         margin: EdgeInsets.only(top: 60, left: 20, right: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,13 +62,13 @@ class _HomeState extends State<Home> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Good Morning, Duc", style: AppWidget.boldTextFieldStyle(),),
+                    Text("Good Morning," + name!, style: AppWidget.boldTextFieldStyle(),),
                     Text("Welcome to Apple Store", style: AppWidget.lightTextFieldStyle()),
                   ],
                 ),
                 ClipRRect(
                     borderRadius: BorderRadius.circular(50),
-                    child: Image.asset("images/macpro.png", height: 70, width: 70, fit: BoxFit.cover,)),
+                    child: Image.network(image!, height: 70, width: 70, fit: BoxFit.cover,)),
               ],
             ),
             SizedBox(height: 30,),
