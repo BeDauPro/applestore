@@ -44,7 +44,7 @@ class _BottomnavState extends State<Bottomnav> {
         index: currentTabIndex,
         items: [
           Icon(Icons.home, color: Colors.white,),
-          Icon(Icons.list, color: Colors.white,),
+          Icon(Icons.shopping_bag, color: Colors.white,),
           Icon(Icons.person, color: Colors.white,),
         ]
       ),

@@ -1,36 +1,27 @@
 import 'package:applestoreapp/services/database.dart';
-import 'package:applestoreapp/services/share_pref.dart';
+import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Order extends StatefulWidget {
-  const Order({super.key});
+class AllOrders extends StatefulWidget {
+  const AllOrders({super.key});
 
   @override
-  State<Order> createState() => _OrderState();
+  State<AllOrders> createState() => _AllOrdersState();
 }
 
-class _OrderState extends State<Order> {
-  String? email;
+class _AllOrdersState extends State<AllOrders> {
   Stream? orderStream;
 
-  getthesharepref() async {
-    email = await SharedPreferenceHelper().getUserEmail();
+  getontheload() async{
+    orderStream = await DatabaseMethods().allOrders();
     setState(() {});
   }
 
-  getontheload() async {
-    await getthesharepref();
-    orderStream = await DatabaseMethods().getOrders(email!);
-    setState(() {});
-  }
-
-  @override
   void initState() {
-    getontheload();
     super.initState();
+    getontheload();
   }
-
   Widget allOrder() {
     return StreamBuilder(
       stream: orderStream,
@@ -56,22 +47,27 @@ class _OrderState extends State<Order> {
           itemBuilder: (context, index) {
             DocumentSnapshot ds = snapshot.data.docs[index];
             return buildOrderItem(
-              productImage: ds["ProductImage"],
-              productName: ds["Product"],
-              productPrice: ds["Price"].toString(),
-              productStatus: ds["Status"],
+                userImage: ds["Image"],
+                userEmail: ds["Email"],
+                productName: ds["Product"],
+                productPrice: ds["Price"].toString(),
+                productStatus: ds["Status"],
+                userName : ds["Name:"],
+                orderId: ds.id
             );
           },
         );
       },
     );
   }
-
   Widget buildOrderItem({
-    required String productImage,
-    required String productName,
+    required String userImage,
     required String productPrice,
     required productStatus,
+    required userName,
+    required userEmail,
+    required productName,
+    required String orderId
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -92,7 +88,7 @@ class _OrderState extends State<Order> {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(
-              productImage,
+              userImage,
               height: 120,
               width: 120,
               fit: BoxFit.cover,
@@ -104,7 +100,7 @@ class _OrderState extends State<Order> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  productName,
+                  "Name: "+ userName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -114,21 +110,57 @@ class _OrderState extends State<Order> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  "\$$productPrice",
+                  "Email: "+ userEmail,
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 10,),
+                Text(
+                  "Product: "+ productName,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  "Status: "+ productStatus,
+                  "Price: "+ productPrice,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                     color: Colors.blueAccent,
-                    fontWeight: FontWeight.w600,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                SizedBox(height: 10,),
+                GestureDetector(
+                  onTap: () async {
+                    await DatabaseMethods().updateStatus(orderId);
+                    setState(() {});
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 5.0),
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Done",
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -136,27 +168,19 @@ class _OrderState extends State<Order> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff2f2f2),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text(
-          "Orders",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black),
+        title: Text("All Orders",style: AppWidget.boldTextFieldStyle(),),
       ),
       body: Container(
-        child: allOrder(),
+        margin: EdgeInsets.only(left: 20, right: 20),
+        child: Column(
+          children: [
+            Expanded(child: allOrder())
+          ],
+        ),
       ),
     );
   }

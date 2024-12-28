@@ -179,7 +179,8 @@ class ProductDetail extends StatefulWidget {
           "Name:": name,
           "Email": email,
           "Image": image,
-          "ProductImage": widget.image
+          "ProductImage": widget.image,
+          "Status": "On The Way",
         };
         await DatabaseMethods().orderDetails(orderInfoMap);
         showDialog(
