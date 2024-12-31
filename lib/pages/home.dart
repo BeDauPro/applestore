@@ -12,23 +12,35 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List categories=[
-    "images/macpro.png",
-    "images/ipadpro13.png",
-    "images/iphone16prm.jpeg",
-    "images/watchultra2.png",
-    "images/airpods.jpeg",
+  bool search = false;
+  List<Map<String, String>> categories = [
+    {"image": "images/macpro.png", "name": "Macbook"},
+    {"image": "images/ipadpro13.png", "name": "iPad"},
+    {"image": "images/iphone16prm.jpeg", "name": "iPhone"},
+    {"image": "images/watchultra2.png", "name": "Apple Watch"},
+    {"image": "images/airpods.jpeg", "name": "Airpods"},
   ];
-
-  List Categoryname=[
-    "Macbook",
-    "iPad",
-    "iPhone",
-    "Apple Watch",
-    "Airpods",
-  ];
+  List<Map<String, String>> queryResultSet = [];
 
   String? name, image;
+
+  initiateSearch(String value) {
+    if (value.isEmpty) {
+      setState(() {
+        queryResultSet.clear();
+      });
+      return;
+    }
+
+    setState(() {
+      search = true;
+      queryResultSet = categories
+          .where((category) =>
+          category["name"]!.toLowerCase().startsWith(value.toLowerCase()))
+          .toList();
+    });
+  }
+
 
   getthesharedpref()async{
     name = await SharedPreferenceHelper().getUserName();
@@ -76,6 +88,9 @@ class _HomeState extends State<Home> {
               decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
               width: MediaQuery.of(context).size.width,
               child: TextField(
+                onChanged: (value){
+                  initiateSearch(value);
+                },
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "Search Products",
@@ -85,7 +100,32 @@ class _HomeState extends State<Home> {
               ),
             ),
             SizedBox(height: 20,),
-            Row(
+            search
+                ? queryResultSet.isEmpty
+                ? const Text("No results found.")
+                : ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              primary: false,
+              shrinkWrap: true,
+              children: queryResultSet.map((product) {
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage:
+                    AssetImage(product["image"]!),
+                  ),
+                  title: Text(product["name"]!),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CategoryProducts(
+                            category: product["name"]!),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ):Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Categories", style: AppWidget.semiboldTextFieldStyle()),
@@ -104,25 +144,27 @@ class _HomeState extends State<Home> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Center(
-                      child: Text("All", 
+                      child: Text("All",
                         style: TextStyle(
-                            color: Colors.white, 
-                            fontSize: 20, 
+                            color: Colors.white,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
                   ),
                 ),
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 129,
                     child: ListView.builder(
-                      padding: EdgeInsets.zero,
                       itemCount: categories.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index){
-                          return CategoryTile(image: categories[index], name: Categoryname[index],);
-                        }),
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return CategoryTile(
+                          image: categories[index]["image"]!,
+                          name: categories[index]["name"]!,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ],
