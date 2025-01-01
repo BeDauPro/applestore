@@ -23,6 +23,21 @@ class DatabaseMethods {
     }
   }
 
+  Future<List<DocumentSnapshot>> getAllProductsFromCategories(List<String> categories) async {
+    try {
+      List<DocumentSnapshot> allProducts = [];
+      for (String category in categories) {
+        QuerySnapshot categorySnapshot =
+        await FirebaseFirestore.instance.collection(category).get();
+        allProducts.addAll(categorySnapshot.docs);
+      }
+      return allProducts;
+    } catch (e) {
+      print("Error fetching products from categories: $e");
+      return [];
+    }
+  }
+
 
   Stream<QuerySnapshot> getOrders(String email) {
     try {

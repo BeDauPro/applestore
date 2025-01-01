@@ -1,6 +1,9 @@
 import 'package:applestoreapp/pages/category_products.dart';
+import 'package:applestoreapp/pages/product_detail.dart';
+import 'package:applestoreapp/services/database.dart';
 import 'package:applestoreapp/services/share_pref.dart';
 import 'package:applestoreapp/widget/support_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +15,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late Future<List<DocumentSnapshot>> allProductsFuture;
+
   bool search = false;
   List<Map<String, String>> categories = [
     {"image": "images/macpro.png", "name": "Macbook"},
@@ -48,6 +53,7 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
+
   ontheload()async{
     await getthesharedpref();
     setState(() {
@@ -58,6 +64,108 @@ class _HomeState extends State<Home> {
   void initState(){
     ontheload();
     super.initState();
+    allProductsFuture = DatabaseMethods().getAllProductsFromCategories([
+      'iPhone',
+      'iPad',
+      'Macbook',
+      'Airpods',
+      'Apple Watch',
+    ]);
+  }
+
+  Widget buildProductGrid(List<DocumentSnapshot> productList) {
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.7,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: productList.length,
+      itemBuilder: (context, index) {
+        DocumentSnapshot product = productList[index];
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                spreadRadius: 2,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  product["Image"],
+                  height: 120,
+                  width: 120,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  product["Name"],
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "\$${product["Price"]}",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetail(
+                              name: product["Name"],
+                              price: product["Price"],
+                              image: product["Image"],
+                              detail: product["Detail"],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Icon(
+                        Icons.add_circle_outline,
+                        color: Colors.blueAccent,
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
   @override
   Widget build(BuildContext context) {
@@ -129,7 +237,6 @@ class _HomeState extends State<Home> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Categories", style: AppWidget.semiboldTextFieldStyle()),
-                Text("View All", style: AppWidget.blueTextFieldStyle()),
               ],
             ),
             SizedBox(height: 20,),
@@ -179,229 +286,27 @@ class _HomeState extends State<Home> {
             ),
             SizedBox(height: 20,),
             Container(
-              height: 220,
+              height: 415,
               padding: EdgeInsets.only(left: 10),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  // Product Card
-                  Container(
-                    width: 160,
-                    margin: EdgeInsets.only(right: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Product Image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "images/macpro.png",
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            "MacBook Pro M4",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "\$999",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-
-                                },
-                                child: Icon(
-                                  Icons.add_circle_outline,
-                                  color: Colors.blueAccent,
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 160,
-                    margin: EdgeInsets.only(right: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Product Image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "images/iphone16prm.jpeg",
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            "iPhone 16 Pro",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "\$999",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-
-                                },
-                                child: Icon(
-                                  Icons.add_circle_outline,
-                                  color: Colors.blueAccent,
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 160,
-                    margin: EdgeInsets.only(right: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Product Image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "images/ipadpro13.png",
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            "iPad Pro 13 Inch",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "\$999",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-
-                                },
-                                child: Icon(
-                                  Icons.add_circle_outline,
-                                  color: Colors.blueAccent,
-                                  size: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              child: FutureBuilder<List<DocumentSnapshot>>(
+                future: allProductsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text("Error loading products: ${snapshot.error}"),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text("No products found."),
+                    );
+                  } else {
+                    return buildProductGrid(snapshot.data!);
+                  }
+                },
               ),
             )
           ],
