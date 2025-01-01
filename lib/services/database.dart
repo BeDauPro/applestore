@@ -12,6 +12,18 @@ class DatabaseMethods {
     return await FirebaseFirestore.instance.collection("Orders").where("Status", isEqualTo: "On The Way").snapshots();
   }
 
+  Future addProduct(Map<String, dynamic> userInfoMap, String categoryName) async {
+    if (categoryName.isEmpty) {
+      throw Exception('Category name cannot be empty');
+    }
+    try {
+      await FirebaseFirestore.instance.collection(categoryName).add(userInfoMap);
+    } catch (e) {
+      throw Exception('Error adding product: $e');
+    }
+  }
+
+
   Stream<QuerySnapshot> getOrders(String email) {
     try {
       return FirebaseFirestore.instance

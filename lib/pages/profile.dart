@@ -37,12 +37,7 @@ class _ProfileState extends State<Profile> {
         elevation: 0,
         title: Text(
           "Profile",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-            fontFamily: 'SF Pro',
-          ),
+          style: AppWidget.boldTextFieldStyle(),
         ),
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.black),

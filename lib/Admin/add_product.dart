@@ -1,9 +1,9 @@
 import 'dart:convert';
-
+import 'package:applestoreapp/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:random_string/random_string.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({super.key});
@@ -15,47 +15,13 @@ class AddProduct extends StatefulWidget {
 class _AddProductState extends State<AddProduct> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
-  String? _base64Image;
+  final _imageController = TextEditingController();
+  final _detailController = TextEditingController();
   String? _selectedCategory;
   final List<String> categoryItems = [
-    'iPhone', 'MacBook', 'iPad', 'Apple Watch', 'AirPods'
+    'iPhone', 'MacBook', 'iPad', 'Apple Watch', 'Airpods'
   ];
 
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _base64Image = pickedFile.path;
-      });
-    }
-  }
-
-  Future<void> _addProduct() async {
-    final name = _nameController.text.trim();
-    final price = _priceController.text.trim();
-
-    if (name.isEmpty || price.isEmpty || _base64Image == null || _selectedCategory == null) {
-      Fluttertoast.showToast(msg: "Vui lòng điền đầy đủ thông tin");
-      return;
-    }
-
-    try {
-      await FirebaseFirestore.instance.collection('products').add({
-        'name': name,
-        'price': double.parse(price),
-        'category': _selectedCategory,
-        'image': _base64Image,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      Fluttertoast.showToast(msg: "Thêm sản phẩm thành công!");
-      Navigator.pop(context);
-    } catch (e) {
-      Fluttertoast.showToast(msg: "Lỗi khi thêm sản phẩm: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,48 +51,6 @@ class _AddProductState extends State<AddProduct> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Upload Image Section
-            Text(
-              "Upload the Product Image",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 15),
-            Center(
-              child: GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF7F7F7),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: _base64Image == null
-                    ?Icon(Icons.add_a_photo_outlined, size: 50, color: Colors.grey,)
-                      :ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.memory(base64Decode(_base64Image!),
-                    fit: BoxFit.cover, height: 150, width: 150,),
-                  )
-                ),
-              ),
-            ),
-
-            SizedBox(height: 30),
-
-            // Product Name Section
             Text(
               "Product Name",
               style: TextStyle(
@@ -150,6 +74,7 @@ class _AddProductState extends State<AddProduct> {
                 ],
               ),
               child: TextField(
+                controller: _nameController,
                 decoration: InputDecoration(
                   hintText: "Enter product name",
                   hintStyle: TextStyle(color: Colors.grey[500]),
@@ -158,10 +83,73 @@ class _AddProductState extends State<AddProduct> {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-
             SizedBox(height: 30),
-
-            // Product Category Section
+            Text(
+              "Image link",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Color(0xFFF2F2F7),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _imageController,
+                decoration: InputDecoration(
+                  hintText: "Enter product image link",
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            SizedBox(height: 30),
+            Text(
+              "Product Price",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Color(0xFFF2F2F7),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _priceController,
+                decoration: InputDecoration(
+                  hintText: "Enter product price",
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            SizedBox(height: 30),
             Text(
               "Product Category",
               style: TextStyle(
@@ -220,14 +208,88 @@ class _AddProductState extends State<AddProduct> {
                 ),
               ),
             ),
+            SizedBox(height: 30),
+            Text(
+              "Product Details",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: Color(0xFFF2F2F7),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _detailController,
+                decoration: InputDecoration(
+                  hintText: "Enter product details",
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  border: InputBorder.none,
+                ),
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
 
-            SizedBox(height: 40),
 
-            // Add Product Button
+            SizedBox(height: 80),
+
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Add product functionality
+                onPressed: () async {
+                  if (_nameController.text.isEmpty ||
+                      _priceController.text.isEmpty ||
+                      _imageController.text.isEmpty ||
+                      _detailController.text.isEmpty ||
+                      _selectedCategory == null) {
+                    Fluttertoast.showToast(
+                      msg: "Please fill in all fields",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                    );
+                    return;
+                  }
+
+                  Map<String, dynamic> userInfoMap = {
+                    "Name": _nameController.text,
+                    "Price": _priceController.text,
+                    "Image": _imageController.text,
+                    "Detail": _detailController.text,
+                  };
+
+                  try {
+                    await DatabaseMethods().addProduct(userInfoMap, _selectedCategory!);
+                    Fluttertoast.showToast(
+                      msg: "Product added successfully!",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                    );
+
+                    _nameController.clear();
+                    _priceController.clear();
+                    _imageController.clear();
+                    _detailController.clear();
+                    setState(() {
+                      _selectedCategory = null;
+                    });
+                  } catch (e) {
+                    Fluttertoast.showToast(
+                      msg: "Failed to add product: $e",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,

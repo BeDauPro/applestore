@@ -1,6 +1,7 @@
 import 'package:applestoreapp/Admin/add_product.dart';
 import 'package:applestoreapp/Admin/admin_login.dart';
-import 'package:applestoreapp/pages/all_orders.dart';
+import 'package:applestoreapp/Admin/all_orders.dart';
+import 'package:applestoreapp/Admin/home_admin.dart';
 import 'package:applestoreapp/pages/bottomnav.dart';
 import 'package:applestoreapp/pages/home.dart';
 import 'package:applestoreapp/pages/login.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Bottomnav(),
+      home: Onboarding(),
     );
   }
 }
