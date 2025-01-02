@@ -241,10 +241,7 @@ class _AddProductState extends State<AddProduct> {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-
-
             SizedBox(height: 80),
-
             Center(
               child: ElevatedButton(
                 onPressed: () async {

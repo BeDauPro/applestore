@@ -17,15 +17,15 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  String? name, email, password;
+  String? name, email, password, imageUrl;
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
+  TextEditingController imageController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
 
   registration() async {
-    if (password != null && email != null && name != null) {
+    if (password != null && email != null && name != null && imageUrl != null) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(email: email!, password: password!);
@@ -44,17 +44,17 @@ class _SignupState extends State<Signup> {
             duration: const Duration(seconds: 3),
           ),
         );
-        String Id= randomAlphaNumeric(10);
+        String Id = randomAlphaNumeric(10);
         await SharedPreferenceHelper().saveUserEmail(emailController.text);
         await SharedPreferenceHelper().saveUserId(Id);
         await SharedPreferenceHelper().saveUserName(nameController.text);
-        await SharedPreferenceHelper().saveUserImage("https://avatardep.info/wp-content/uploads/2024/10/capybara-anh-cute-moi-nhat.jpg");
+        await SharedPreferenceHelper().saveUserImage(imageController.text);
 
         Map<String, dynamic> userInfoMap = {
           "Name": nameController.text,
           "Email": emailController.text,
-          "Id":Id,
-          "Image": "https://avatardep.info/wp-content/uploads/2024/10/capybara-anh-cute-moi-nhat.jpg"
+          "Id": Id,
+          "Image": imageController.text
         };
         await DatabaseMethods().addUserDetails(userInfoMap, Id);
         Navigator.push(context, MaterialPageRoute(builder: (context) => Bottomnav()));
@@ -183,6 +183,17 @@ class _SignupState extends State<Signup> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: imageController,
+              decoration: InputDecoration(
+                labelText: "Avatar Image URL",
+                hintText: "Enter image URL",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
             const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () {},
@@ -200,6 +211,7 @@ class _SignupState extends State<Signup> {
                       name = nameController.text;
                       email = emailController.text;
                       password = passwordController.text;
+                      imageUrl = imageController.text;
                     });
                   }
                   registration();

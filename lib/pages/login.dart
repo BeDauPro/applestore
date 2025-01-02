@@ -170,36 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text(
-                      "Or continue with",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.facebook),
-                      color: Colors.blue,
-                      iconSize: 40,
-                    ),
-                    const SizedBox(width: 20),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.email),
-                      color: Colors.red,
-                      iconSize: 40,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
