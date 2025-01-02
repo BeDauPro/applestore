@@ -20,7 +20,7 @@ class _ProfileState extends State<Profile> {
     image = await SharedPreferenceHelper().getUserImage();
     name = await SharedPreferenceHelper().getUserName();
     email = await SharedPreferenceHelper().getUserEmail();
-    setState(() {}); // Update the UI after fetching data
+    setState(() {});
   }
 
   @override

@@ -182,7 +182,7 @@ class _HomeState extends State<Home> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Good Morning," + name!, style: AppWidget.boldTextFieldStyle(),),
+                    Text("Hello, " + name!, style: AppWidget.boldTextFieldStyle(),),
                     Text("Welcome to Apple Store", style: AppWidget.lightTextFieldStyle()),
                   ],
                 ),

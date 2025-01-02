@@ -1,4 +1,5 @@
 import 'package:applestoreapp/pages/bottomnav.dart';
+import 'package:applestoreapp/pages/forgot_password.dart';
 import 'package:applestoreapp/pages/signup.dart';
 import 'package:applestoreapp/widget/support_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -135,7 +136,9 @@ class _LoginPageState extends State<LoginPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword()));
+                    },
                     child: Text(
                       "Forgot Password?",
                       style: AppWidget.blueTextFieldStyle(),
